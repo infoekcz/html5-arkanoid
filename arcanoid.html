@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+<head>    
+    <script type="text/javascript" src="js/HAGE.js"></script>
+	<style>
+		* {
+			margin:0;
+			padding:0;
+		}
+
+		body {
+			background:#D9D9D9;
+		}
+
+		#canvas {
+			background:#F2F2F2;
+			border:1px solid #ccc;
+			left:50%;
+			margin-left:-320px;
+			margin-top:-240px;
+			position:absolute;
+			text-align:center;
+			top:50%;
+		} 
+	</style>
+	<script>
+		
+		var game_screen_width  = 640;  
+		var game_screen_height = 460; // canvas 480
+	
+		// Game stages
+		const menu_stage  = 0;
+		const game_stage  = 1;		
+		const score_stage = 2;
+		
+		
+		var game_start = false;
+		
+		
+		var game_current_stage = menu_stage;
+		
+		// Game control
+		const mouse_control    = 0;
+		const keyboard_control = 1;
+		
+		var game_current_control = mouse_control;
+		
+		// Game objects
+		var ball = new Object();
+		var paddle = new Object();			
+		var bricks = new Object();
+		
+		// Game level
+		var level = 1;
+		var score = 0;
+		var lives = 3;
+		var speed = 5;
+		
+
+		// Bricks
+		var bricks_destroed = 0;
+		var bricks_count = 0;
+
+
+		// Game levels		
+							
+		// PHP					
+		var level_bricks_count1  = 84;
+		var level_bricks1 = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+							 [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+							 [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+							 [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+							 [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+							 [1,2,2,2,1,2,1,2,1,2,2,2,1,1],
+							 [1,2,1,2,1,2,1,2,1,2,1,2,1,1],
+							 [1,2,2,2,1,2,2,2,1,2,2,2,1,1],
+							 [1,2,1,1,1,2,1,2,1,2,1,1,1,1],
+							 [1,1,1,1,1,1,1,1,1,1,1,1,1,1]];
+							
+
+							
+		// ???
+		var level_bricks_count2  = 84;
+		var level_bricks2 = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+							 [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+							 [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+							 [1,2,2,2,1,2,2,2,1,2,2,2,1,1],
+							 [1,1,1,2,1,1,1,2,1,1,1,2,1,1],
+							 [1,1,1,2,1,1,1,2,1,1,1,2,1,1],
+							 [1,1,2,1,1,1,2,1,1,1,2,1,1,1],
+							 [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+							 [1,1,2,1,1,1,2,1,1,1,2,1,1,1],
+							 [0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
+
+		// :)					
+		var level_bricks_count3  = 98;
+		var level_bricks3 = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+							 [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+							 [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+							 [1,1,1,1,1,2,2,2,1,1,1,1,1,1],
+							 [1,1,1,1,1,2,2,2,1,1,1,1,1,1],
+							 [1,1,2,2,1,1,2,1,1,2,2,1,1,1],
+							 [1,1,2,2,2,2,2,2,2,2,2,1,1,1],
+							 [1,1,1,1,1,1,2,1,1,1,1,1,1,1],
+							 [1,1,1,1,1,2,1,2,1,1,1,1,1,1],
+							 [1,1,1,1,2,2,1,2,2,1,1,1,1,1]];
+		
+
+		// Start first level
+		var level_bricks_count = level_bricks_count1;
+		var level_bricks = level_bricks1;
+		
+		
+		function initMenu() {
+			
+		}
+		
+		function updateMenu() {
+			if(KEY_W) {
+				game_current_stage = game_stage;
+				initGame();
+			}
+			
+			if(KEY_M) {
+				game_current_control = mouse_control;
+			}
+			
+			if(KEY_K) {
+				game_current_control = keyboard_control;
+			}
+			
+		}
+		
+		function drawMenu() {
+			textFont('34pt Arial');
+			text('ARCANOID',200,180);
+			
+			textFont('24pt Arial');
+			text('PRESS',150,270);
+			textColor("#000");
+			text('W',265,270);
+			textColor("#999");
+			text('TO START',305,270);			
+			
+			text('Control: ',150,330);
+			if(game_current_control == mouse_control) {
+				textColor("#000");
+			} else {
+				textColor("#999");
+			}
+			text('m',270,330);
+			textColor("#999");
+			text('ouse',297,330);
+			textColor("#999");
+			text('/',370,330);
+			if(game_current_control == keyboard_control) {
+				textColor("#000");
+			} else {
+				textColor("#999");
+			}			
+			text('k',380,330);
+			textColor("#999");
+			text('eyboard',397,330);
+			
+			textFont('10pt Arial');
+			textColor("#333");
+			text('Browsers:',20,470);
+			text('chrome,',85,470);
+			text('safari',135,470);
+		}
+	
+		function initBall() {
+			ball.x = 350;			
+			ball.y = 300;
+			ball.dx = 0;
+			ball.dy = speed;  
+			ball.radius = 5;
+		}
+		
+		function drawBall() {
+			circle(ball.x, ball.y, ball.radius, "#A6A6A6");        
+		}
+		
+		function updateBall() {
+		
+			
+			// Collisions with game level
+			if(ball.x + ball.dx + ball.radius > canvas.width || ball.x + ball.dx - ball.radius < 0)  ball.dx = -ball.dx;     
+
+			// Collissions with bricks
+			rowheight = bricks.height + bricks.padding;
+			colwidth = bricks.width + bricks.padding;
+			row = Math.floor(ball.y/rowheight);
+			col = Math.floor(ball.x/colwidth);
+			
+			// @todo some time collissions is not true!
+			// Ball collision with brick
+			if (ball.y < bricks.rows * rowheight && row >= 0 && col >= 0 && level_bricks[row][col] == 1) {
+				ball.dy = -ball.dy;
+				level_bricks[row][col] = 0;
+				score += 50;		
+				bricks_destroed++; 
+			}
+			
+			// Ball collision with rock
+			if (ball.y < bricks.rows * rowheight && row >= 0 && col >= 0 && level_bricks[row][col] == 2) {
+				ball.dy = -ball.dy;            
+				level_bricks[row][col] = 1;
+			}
+			
+			
+			// Ball collision
+			if(ball.y + ball.dy - ball.radius < 20) {
+				// Collision with top of the room
+				ball.dy = -ball.dy;
+			} else {
+				// Collision with paddle
+				if(ball.y + ball.dy + ball.radius > canvas.height - paddle.height) {
+					// Collision with paddle
+					if(ball.x + ball.radius > paddle.x && ball.x - ball.radius < paddle.x + paddle.width) {
+						ball.dy = -ball.dy;
+						ball.dx = 8 * ((ball.x-(paddle.x+paddle.width/2))/paddle.width);						
+					} else {                
+						// Collision with the bottom of the room - Water
+						if(ball.y + ball.dy + ball.radius > canvas.height) {
+							// Sub lives 
+							lives -= 1;
+							// Sub score
+							score -= 100;
+							
+							// Magnet ball
+							game_start = false;
+							
+							// Respawn ball
+							initBall();
+							
+										
+						}
+					}
+				}
+			}
+			
+			// Ball moves    
+			ball.x += ball.dx;
+			ball.y += ball.dy;    
+		}
+		
+		function magnetBall() {
+			ball.x = paddle.x + (paddle.width/2); 
+			ball.y = paddle.y - paddle.height; 
+		}		
+		
+		function initPaddle() {
+			paddle.x = 100;
+			paddle.y = 470;
+			paddle.width = 100;
+			paddle.height = 10;
+		}
+		
+		function drawPaddle() {
+			borderColor('#000');
+			rectangle(paddle.x, paddle.y, paddle.width, paddle.height, "#333");
+		}
+
+		function updatePaddle() {
+			
+			if(game_current_control == mouse_control) {
+				// Mouse control
+				paddle.x = mouseX - (paddle.width/2);
+			} else {
+				// Keybord control
+				if(KEY_LEFT) paddle.x = paddle.x - 10;
+				if(KEY_RIGHT) paddle.x = paddle.x + 10;
+			}
+			
+			
+			if(paddle.x < 0) paddle.x = 0; 
+			if(paddle.x + paddle.width > 640) paddle.x = canvas.width - paddle.width;   
+		}
+		
+		function initBricks() {
+			bricks.cols = 15;
+			bricks.rows = 10;
+			bricks.width = (canvas.width / bricks.cols);
+			bricks.height = 25;
+			bricks.padding = 3;	
+			bricks_count = level_bricks_count;
+		}
+
+
+		function drawBricks() {	
+			for (i=0; i < bricks.rows; i++) {
+				for (j=0; j < bricks.cols; j++) {          
+					// Brick
+					if (level_bricks[i][j] == 1) {         			
+						  rectangle((j * (bricks.width + bricks.padding)) + bricks.padding, 
+										(i * (bricks.height + bricks.padding)) + bricks.padding,
+											  bricks.width, bricks.height,"#fff");                
+					}
+					// Rock
+					if (level_bricks[i][j] == 2) {                
+						rectangle((j * (bricks.width + bricks.padding)) + bricks.padding, 
+										(i * (bricks.height + bricks.padding)) + bricks.padding,
+											  bricks.width, bricks.height,"#333");                
+					}
+				}
+			}
+		}
+
+		function updateBricks() {
+			
+			// If lives is 0 then game over
+			if(lives <= 0) {
+				game_current_stage = score_stage;
+			}
+			
+			
+			// If bricks destroed for this level then level + 1
+			if(bricks_count != 0) {
+				if(bricks_destroed == bricks_count)  {
+					bricks_destroed = 0;
+					level +=1;
+					speed +=2;
+					game_start = false;
+					initBall();				
+				}
+			}
+			
+			// Load levels
+			switch(level) {
+				case 1: 
+					level_bricks_count = level_bricks_count1;
+					level_bricks = level_bricks1;
+				break;
+				case 2: 
+					level_bricks_count	= level_bricks_count2;
+					level_bricks = level_bricks2;
+				break;
+				case 3: 
+					level_bricks_count	= level_bricks_count3;
+					level_bricks = level_bricks3;
+				break;
+			}
+			
+			if(level > 3) {
+				game_current_stage = score_stage;
+			}	
+
+			// Init new level here
+			initBricks();
+			
+		}
+		
+		function initGame() {
+			initBall();		
+			initPaddle();
+			initBricks();			
+		}
+		
+		function updateGame() {			
+			
+			if(game_current_control == mouse_control) {
+				if(mouseClick) game_start = true;			
+				if(game_start) updateBall(); else magnetBall();
+			} else {
+				if(KEY_SPACE) game_start = true;			
+				if(game_start) updateBall(); else magnetBall();
+			}
+			
+			updatePaddle();
+			updateBricks();
+		}
+		
+		function drawInfoBar() {
+			rectangle(0, 0, 640, 20, "#333");
+			
+			textColor('#fff');
+			text('Score: ' + score,10,15);		
+			text('Level: ' + level,300,15);
+			text('Lives: ' + lives,570,15);
+			
+		}
+		
+		function drawGame() {			
+			drawInfoBar();
+			drawBall();			
+			drawPaddle();			
+			drawBricks();					
+		}
+	
+		function initScore() {
+		
+		}
+		
+		function updateScore() {
+			// Its simple works in all browsers :)
+			// if(F5) RESTART THE GAME
+		}
+		
+		function drawScore() {
+			textFont('34pt Arial');
+			text('ARCANOID',200,180);
+			
+			textFont('24pt Arial');
+			text('Score:',200,280);
+			text(score,300,280);
+			
+			
+			text('PRESS',80,380);
+			textColor('#333');
+			text('F5',200,380);			
+			textColor('#999');
+			text('RESTART THE GAME',247,380);
+			
+		}
+	
+	
+		function init() {	
+			noCursor();
+			initMenu();			
+		}
+		
+		function update() {			
+			switch(game_current_stage) {
+				case menu_stage:  updateMenu(); break;
+				case game_stage:  updateGame(); break;
+				case score_stage: updateScore(); break;
+			}
+		}
+		
+		function draw() {
+			textFont("10pt Arial");
+			text('FPS: ' + fps, 10, 20);
+			
+			switch(game_current_stage) {
+				case menu_stage:  drawMenu(); break;
+				case game_stage:  drawGame(); break;
+				case score_stage: drawScore(); break;
+			}
+			
+		}
+	</script>
+</head>
+<body onload="hageRun()"
+	  onkeydown="hageKeyboardUpdateStates(event)"
+	  onkeyup="hageKeyboardClearStates(event)"> 
+    <canvas id = "canvas"
+            width = "640"
+            height = "480"
+			onmousedown="hageMouseDown(event)" 
+			onmouseup="hageMouseUp(event)" 
+			onmousemove="hageMouseMove(event)"
+			onclick="hageMouseClick(event)">
+    </canvas>
+</body>
+</html>
