@@ -1,4 +1,4 @@
-html5-arcanoid
+HTML5 Arcanoid
 ==============
 
-HTML5 Arcanoid
+Demo: http://awilum.monstra.org/arcanoid/
