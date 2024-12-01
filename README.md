@@ -13,6 +13,6 @@ UKRAINE:
 
 Hru si můžete zahrát v tomto odkaze:
 You can play the game at this link:
-Пограти у гру можна за цим посиланням:
+
 https://infoek.cz/wp-content/hry/arkanoid/arkanoid.html
-https://infoek.cz/open-source-hry-v-prohlizeci-bez-instalace/
+
